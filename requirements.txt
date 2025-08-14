@@ -1,3 +1,4 @@
 sudachipy>=0.6.10
 sudachidict-core>=20250515
 joyokanji
+pytest

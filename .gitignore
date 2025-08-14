@@ -208,3 +208,5 @@ __marimo__/
 
 # RAW usr dict files
 ja_entityparser/dict/*.csv
+
+.DS_Store
