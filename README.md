@@ -1,6 +1,6 @@
 
 # ja-entity-parser  
-[![tests](https://github.com/new-village/ja-entity-parser/actions/workflows/tests.yml/badge.svg)](https://github.com/new-village/ja-entity-parser/actions/workflows/tests.yml) ![PyPI - Version](https://img.shields.io/pypi/v/ja_entityparser)
+[![Test](https://github.com/new-village/ja-entity-parser/actions/workflows/test.yaml/badge.svg)](https://github.com/new-village/ja-entity-parser/actions/workflows/test.yaml) [![PyPI - Version](https://img.shields.io/pypi/v/ja-entity-parser)](https://pypi.org/project/ja-entity-parser/)
   
 [日本語](./docs/README_ja.md) / [English](./README.md)  
   
@@ -20,11 +20,7 @@ It combines SudachiPy morphological analysis with custom normalization rules (ol
 ### Installation
 
 ```bash
-git clone https://github.com/new-village/ja-entity-parser.git
-cd ja-entity-parser
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+pip install ja-entity-parser
 ```
 
 ### Usage
