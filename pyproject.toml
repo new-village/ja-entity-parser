@@ -1,0 +1,32 @@
+[project]
+name = "ja-entity-parser"
+version = "0.1.0"
+description = "Japanese entity parser library for company/corporate name normalization and extraction."
+readme = "README.md"
+authors = [
+    { name = "new-village" }
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+dependencies = [
+    "sudachipy>=0.6.10",
+    "sudachidict-core>=20250515",
+    "joyokanji"
+]
+
+[project.urls]
+Homepage = "https://github.com/new-village/ja-entity-parser"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ja_entityparser"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+ja_entityparser = [
+    "dict/*.dic",
+    "dict/*.json"
+]

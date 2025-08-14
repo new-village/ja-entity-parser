@@ -1,0 +1,25 @@
+{
+    "systemDict" : null,
+    "userDict" : ["ja-entity-parser.dic"],
+    "inputTextPlugin" : [
+        { "class" : "com.worksap.nlp.sudachi.DefaultInputTextPlugin" },
+        { "class" : "com.worksap.nlp.sudachi.ProlongedSoundMarkPlugin",
+          "prolongedSoundMarks": ["ー", "-", "⁓", "〜", "〰"],
+          "replacementSymbol": "ー"},
+	    { "class": "com.worksap.nlp.sudachi.IgnoreYomiganaPlugin",
+          "leftBrackets": ["(", "（"],
+          "rightBrackets": [")", "）"],
+          "maxYomiganaLength": 4}
+    ],
+    "oovProviderPlugin" : [
+        { "class" : "com.worksap.nlp.sudachi.SimpleOovPlugin",
+          "oovPOS" : [ "名詞", "普通名詞", "一般", "*", "*", "*" ],
+          "leftId" : 5968,
+          "rightId" : 5968,
+          "cost" : 8000 }
+    ],
+    "pathRewritePlugin" : [
+        { "class" : "com.worksap.nlp.sudachi.JoinNumericPlugin",
+          "enableNormalize" : true }
+    ]
+}
