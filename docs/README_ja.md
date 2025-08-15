@@ -13,6 +13,7 @@ SudachiPy形態素解析と独自の正規化ルール（旧字→新字、括�
 
 - **日本語テキストの正規化**: 旧字→新字変換、括弧・句読点・制御文字の統一、NFKC正規化、独自辞書による置換
 - **企業名・法人種別抽出**: SudachiPyによる形態素解析と品詞情報を活用
+- **カタカナ読み出力**: 形態素の読みを連結して `brand_kana` を生成
 - **ユーザー辞書対応**: Sudachi用ユーザー辞書で業界固有語も対応可能
 - **テスト・拡張性**: pytestによるユニットテスト完備
 
@@ -35,7 +36,7 @@ from ja_entityparser import corporate_parser
 
 result = corporate_parser("トヨタ自動車株式会社")
 print(result)
-# {'input': 'トヨタ自動車株式会社', 'legal_form': '株式会社', 'brand_name': 'トヨタ自動車'}
+# {'input': 'トヨタ自動車株式会社', 'legal_form': '株式会社', 'brand_name': 'トヨタ自動車', 'brand_kana': 'トヨタジドウシャ'}
 ```
 
 #### 2. 正規化のみ
@@ -55,17 +56,17 @@ from ja_entityparser.parser import parse
 
 result = parse("トヨタ自動車株式会社")
 print(result)
-# {'legal_form': '株式会社', 'brand_name': 'トヨタ自動車'}
+# {'legal_form': '株式会社', 'brand_name': 'トヨタ自動車', 'brand_kana': 'トヨタジドウシャ'}
 ```
 
 ### API
 
 - `corporate_parser(text: str) -> dict`
-	- 入力文字列を正規化＋解析し、`{'input': ..., 'legal_form': ..., 'brand_name': ...}`を返す
+	- 入力文字列を正規化＋解析し、`{'input': ..., 'legal_form': ..., 'brand_name': ..., 'brand_kana': ...}` を返す（brand_kana は取得できる場合）
 - `normalize(text: str) -> str`
 	- 日本語テキストを正規化
 - `parse(text: str) -> dict`
-	- 形態素解析し、企業名・法人種別を抽出
+	- 形態素解析し、企業名・法人種別（および可能なら brand_kana）を抽出
 
 ### ライセンス
 

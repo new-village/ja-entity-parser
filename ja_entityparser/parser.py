@@ -53,6 +53,8 @@ def extract_business(tokens: List) -> dict[str]:
 
     # 企業名の抽出: 品詞情報に「企業名」が含まれる場合
     parsed_strings['brand_name'] = ''.join([m.surface() for m in tokens])
+    # 企業名カナの抽出: 品詞情報に「企業名」が含まれる場合
+    parsed_strings['brand_kana'] = ''.join([m.reading_form() for m in tokens])
     # 'input' を削除
     parsed_strings.pop('input', None)
     return parsed_strings

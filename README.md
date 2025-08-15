@@ -14,6 +14,7 @@ It combines SudachiPy morphological analysis with custom normalization rules (ol
 
 - **Japanese text normalization**: Old/new kanji conversion, bracket/punctuation/control character unification, NFKC, custom dictionary replacements
 - **Company/corporate type extraction**: Uses SudachiPy and part-of-speech info
+- **Katakana reading output**: Builds brand_kana by concatenating token reading forms
 - **User dictionary support**: Extendable for industry-specific terms
 - **Testing & extensibility**: Comes with pytest-based unit tests
 
@@ -32,7 +33,7 @@ from ja_entityparser import corporate_parser
 
 result = corporate_parser("トヨタ自動車株式会社")
 print(result)
-# {'input': 'トヨタ自動車株式会社', 'legal_form': '株式会社', 'brand_name': 'トヨタ自動車'}
+# {'input': 'トヨタ自動車株式会社', 'legal_form': '株式会社', 'brand_name': 'トヨタ自動車', 'brand_kana': 'トヨタジドウシャ'}
 ```
 
 #### 2. Normalization only
@@ -52,18 +53,18 @@ from ja_entityparser.parser import parse
 
 result = parse("トヨタ自動車株式会社")
 print(result)
-# {'legal_form': '株式会社', 'brand_name': 'トヨタ自動車'}
+# {'legal_form': '株式会社', 'brand_name': 'トヨタ自動車', 'brand_kana': 'トヨタジドウシャ'}
 ```
 
 ### API
 
 - `corporate_parser(text: str) -> dict`
-	- Normalize and parse input, returns `{'input': ..., 'legal_form': ..., 'brand_name': ...}`
+	- Normalize and parse input, returns `{'input': ..., 'legal_form': ..., 'brand_name': ..., 'brand_kana': ...}` (brand_kana when available)
 - `normalize(text: str) -> str`
 	- Normalize Japanese text
 - `parse(text: str) -> dict`
-	- Morphological analysis and extraction of brand name/legal form
+	- Morphological analysis and extraction of brand name/legal form (and brand_kana when available)
 
 ### License
 
-MIT License
+Apache License 2.0
