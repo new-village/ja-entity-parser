@@ -54,15 +54,15 @@ def test_joyokanji(input_text, expected):
 
 # 英字は小文字化
 @pytest.mark.parametrize("input_text,expected", [
-    ("ＡＢＣ（株）テスト・カンパニー", "abc(株)テスト カンパニー"),
-    ("MicroSoft", "microsoft"),
+    ("ＡＢＣ（株）テスト・カンパニー", "ABC(株)テスト カンパニー"),
+    ("Microsoft Corporation", "Microsoft Corporation"),
 ])
 def test_lowercase(input_text, expected):
     assert normalize(input_text) == expected
 
 # NFKC正規化
 @pytest.mark.parametrize("input_text,expected", [
-    ("㍿ＡＢＣ", "株式会社abc"),
+    ("㍿ＡＢＣ", "株式会社ABC"),
     ("日本ﾏｲｸﾛｿﾌﾄ㈱", "日本マイクロソフト(株)"),
 ])
 def test_nfkc(input_text, expected):
@@ -87,7 +87,7 @@ def test_normalize_json_replace(input_text, expected):
 
 # サンプルの網羅
 @pytest.mark.parametrize("input_text,expected", [
-    ("ＡＢＣ（株）テスト・カンパニー 〜 第１事業部", "abc(株)テスト カンパニー ~ 第1事業部")
+    ("ＡＢＣ（株）テスト・カンパニー 〜 第１事業部", "ABC(株)テスト カンパニー ~ 第1事業部")
 ])
 def test_samples(input_text, expected):
     assert normalize(input_text) == expected

@@ -127,10 +127,7 @@ def normalize(text: str) -> str:
     # 6) 旧字→新字（joyokanji）
     text = joyokanji.convert(text, variants=True)
 
-    # 7) 英字を小文字化
-    text = text.lower()
-
-    # 8) 最後に NFKC
+    # 7) 最後に NFKC
     text = unicodedata.normalize("NFKC", text)
 
     # 9) normalize.jsonによる置換

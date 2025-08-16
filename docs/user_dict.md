@@ -3,7 +3,7 @@
 ### 使い方
 
 ```
-$ sudachipy ubuild src/dict/legal_form.csv -s .venv/lib/python3.13/site-packages/sudachidict_core/resources/system.dic -o src/dict/ja-entity-parser.dic
+$ sudachipy ubuild ja_entityparser/dict/legal_form.csv -s .venv/lib/python3.13/site-packages/sudachidict_core/resources/system.dic -o ja_entityparser/dict/ja-entity-parser.dic
 ```
 
 ### Memo
