@@ -35,7 +35,16 @@ def _sudachi_tokenize(text: str) -> List:
         return [text]
     
     return list(tokens)
-    # return [{'surface': m.surface(), 'part_of_speech': m.part_of_speech()} for m in tokens]
+
+def _extract_brand_name(tokens: List) -> str:
+    """Extract brand name from Sudachi tokens."""
+    brand_name = ''.join([m.surface() for m in tokens])
+    return brand_name
+
+def _extract_brand_kana(tokens: List) -> str:
+    """Extract brand name from Sudachi tokens."""
+    brand_kana = ''.join([m.reading_form() for m in tokens if 'キゴウ' not in m.reading_form()])
+    return brand_kana
 
 def extract_business(tokens: List) -> dict[str]:
     """Extract business names from Sudachi tokens.
@@ -52,9 +61,10 @@ def extract_business(tokens: List) -> dict[str]:
             tokens.remove(m)
 
     # 企業名の抽出: 品詞情報に「企業名」が含まれる場合
-    parsed_strings['brand_name'] = ''.join([m.surface() for m in tokens])
+    parsed_strings['brand_name'] = _extract_brand_name(tokens)
     # 企業名カナの抽出: 品詞情報に「企業名」が含まれる場合
-    parsed_strings['brand_kana'] = ''.join([m.reading_form() for m in tokens])
+    parsed_strings['brand_kana'] = _extract_brand_kana(tokens)
+    logger.debug([{'surface': m.surface(), 'pos': m.part_of_speech()} for m in tokens])
     # 'input' を削除
     parsed_strings.pop('input', None)
     return parsed_strings
