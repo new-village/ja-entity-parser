@@ -1,6 +1,6 @@
 [project]
 name = "ja-entity-parser"
-version = "0.2.0"
+version = "0.2.1"
 description = "Japanese entity parser library for company/corporate name normalization and extraction."
 readme = "README.md"
 authors = [
