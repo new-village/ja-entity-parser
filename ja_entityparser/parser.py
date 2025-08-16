@@ -42,7 +42,7 @@ def _extract_brand_name(tokens: List) -> str:
     return brand_name
 
 def _extract_brand_kana(tokens: List) -> str:
-    """Extract brand name from Sudachi tokens."""
+    """Extract kana reading form of the brand name from Sudachi tokens."""
     brand_kana = ''.join([m.reading_form() for m in tokens if 'キゴウ' not in m.reading_form()])
     return brand_kana
 
