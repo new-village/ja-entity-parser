@@ -103,8 +103,6 @@ print(normalize(text))
 | `parse_address(text)` | Parse Japanese address | `input`, `normalized`, `prefecture`?, `city`?, `town`?, `block`? |
 | `normalize(text)` | Normalize Japanese text | `str` |
 
-> **Deprecated:** `corporate_parser()` is a deprecated alias for `parse_corporate()`. It will be removed in v2.0.
-
 ### License
 
 Apache License 2.0

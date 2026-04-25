@@ -98,15 +98,4 @@ class TestParseAddress:
         assert "block" in r
 
 
-# ── deprecated alias ─────────────────────────────────────────────────────────
 
-def test_corporate_parser_deprecated():
-    from ja_entityparser import corporate_parser
-    import warnings
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-        result = corporate_parser("株式会社テスト")
-        assert len(w) == 1
-        assert issubclass(w[0].category, DeprecationWarning)
-        assert "corporate_parser" in str(w[0].message)
-    assert "brand_name" in result
