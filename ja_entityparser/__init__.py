@@ -1,5 +1,4 @@
 import logging
-import warnings
 from .normalizer import normalize
 from .tokenizer import sudachi_tokenize
 from .parsers.corporate import extract_business
@@ -50,15 +49,4 @@ def parse_address(text: str) -> dict:
     return result
 
 
-def corporate_parser(text: str) -> dict:
-    """Deprecated alias for parse_corporate(). Will be removed in v2.0."""
-    warnings.warn(
-        "corporate_parser() is deprecated and will be removed in v2.0. "
-        "Use parse_corporate() instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return parse_corporate(text)
-
-
-__all__ = ["parse_corporate", "parse_person", "parse_address", "corporate_parser"]
+__all__ = ["parse_corporate", "parse_person", "parse_address"]
