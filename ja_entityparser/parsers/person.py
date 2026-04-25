@@ -40,20 +40,23 @@ def _split_by_sudachi(tokens: List) -> Optional[dict]:
     given_kana = []
 
     for m in tokens:
+        surface = m.surface().strip()
+        if not surface:
+            continue  # Skip whitespace tokens
         pos = _pos_str(m)
         if _POS_FAMILY in pos:
-            family_parts.append(m.surface())
+            family_parts.append(surface)
             family_kana.append(m.reading_form())
         elif _POS_GIVEN in pos:
-            given_parts.append(m.surface())
+            given_parts.append(surface)
             given_kana.append(m.reading_form())
         else:
             # Unknown: append to whichever is shorter (heuristic)
             if not given_parts and family_parts:
-                given_parts.append(m.surface())
+                given_parts.append(surface)
                 given_kana.append(m.reading_form())
             else:
-                family_parts.append(m.surface())
+                family_parts.append(surface)
                 family_kana.append(m.reading_form())
 
     if family_parts or given_parts:
@@ -73,9 +76,9 @@ def _split_by_space(text: str) -> Optional[dict]:
     parts = text.split()
     if len(parts) >= 2:
         return {
-            "family_name": parts[0],
+            "family_name": parts[0].strip(),
             "family_name_kana": "",
-            "given_name": "".join(parts[1:]),
+            "given_name": "".join(parts[1:]).strip(),
             "given_name_kana": "",
         }
     return None
