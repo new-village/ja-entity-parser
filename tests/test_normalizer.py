@@ -54,7 +54,7 @@ def test_joyokanji(input_text, expected):
 
 # 英字は小文字化
 @pytest.mark.parametrize("input_text,expected", [
-    ("ＡＢＣ（株）テスト・カンパニー", "ABC(株)テスト カンパニー"),
+    ("ＡＢＣ（株）テスト・カンパニー", "ABC株式会社テスト カンパニー"),
     ("Microsoft Corporation", "Microsoft Corporation"),
 ])
 def test_lowercase(input_text, expected):
@@ -63,7 +63,7 @@ def test_lowercase(input_text, expected):
 # NFKC正規化
 @pytest.mark.parametrize("input_text,expected", [
     ("㍿ＡＢＣ", "株式会社ABC"),
-    ("日本ﾏｲｸﾛｿﾌﾄ㈱", "日本マイクロソフト(株)"),
+    ("日本ﾏｲｸﾛｿﾌﾄ㈱", "日本マイクロソフト株式会社"),
 ])
 def test_nfkc(input_text, expected):
     assert normalize(input_text) == expected
@@ -87,7 +87,28 @@ def test_normalize_json_replace(input_text, expected):
 
 # サンプルの網羅
 @pytest.mark.parametrize("input_text,expected", [
-    ("ＡＢＣ（株）テスト・カンパニー 〜 第１事業部", "ABC(株)テスト カンパニー ~ 第1事業部")
+    ("ＡＢＣ（株）テスト・カンパニー 〜 第１事業部", "ABC株式会社テスト カンパニー ~ 第1事業部")
 ])
 def test_samples(input_text, expected):
+    assert normalize(input_text) == expected
+
+# Phase 1: 法人略称の正規化
+@pytest.mark.parametrize("input_text,expected", [
+    ("(株)トヨタ自動車", "株式会社トヨタ自動車"),
+    ("トヨタ自動車(株)", "トヨタ自動車株式会社"),
+    ("イオン(有)", "イオン有限会社"),
+    ("アマゾンジャパン(合)", "アマゾンジャパン合同会社"),
+])
+def test_corporate_abbreviation_normalize(input_text, expected):
+    assert normalize(input_text) == expected
+
+# Phase 1: 漢数字 → 算用数字
+@pytest.mark.parametrize("input_text,expected", [
+    ("三百二十一", "321"),
+    ("千九百九十九", "1999"),
+    ("第三事業部", "第3事業部"),
+    ("十五層", "15層"),
+    ("一二三", "123"),
+])
+def test_kanji_to_arabic(input_text, expected):
     assert normalize(input_text) == expected
