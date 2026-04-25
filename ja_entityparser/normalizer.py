@@ -61,6 +61,58 @@ VOICING_MAP = {
     "\u309C": "\u309A",  # ゜ → COMBINING SEMI-VOICED SOUND MARK
 }
 
+# ===== 漢数字 → 算用数字 =====
+_KANJI_DIGIT_MAP = {
+    '〇': 0, '一': 1, '二': 2, '三': 3, '四': 4,
+    '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
+}
+_KANJI_UNIT_MAP = {
+    '十': 10, '百': 100, '千': 1000,
+    '万': 10000, '億': 100000000,
+}
+_KANJI_NUM_PATTERN = re.compile(
+    r'[〇一二三四五六七八九十百千万億]+'
+)
+
+
+def _kanji_to_arabic(text: str) -> str:
+    """Convert kanji numerals in text to Arabic numerals.
+
+    Handles positional notation: 三百二十一 → 321, 千九百九十九 → 1999.
+    Also handles simple digits: 一 → 1, 〇 → 0.
+    """
+    def _parse_section(s: str) -> int:
+        """Parse a kanji numeral string (without 万/億) to int."""
+        result = 0
+        current = 0
+        for ch in s:
+            if ch in _KANJI_DIGIT_MAP:
+                current = _KANJI_DIGIT_MAP[ch]
+            elif ch in _KANJI_UNIT_MAP:
+                unit = _KANJI_UNIT_MAP[ch]
+                if unit >= 10000:
+                    # 万・億 are handled at the outer level
+                    result = (result + current) * unit if current else result * unit
+                    current = 0
+                else:
+                    result += (current if current else 1) * unit
+                    current = 0
+        result += current
+        return result
+
+    def _replace(m: re.Match) -> str:
+        s = m.group(0)
+        # If it's all simple digits (no units), map each char
+        if all(c in _KANJI_DIGIT_MAP for c in s):
+            return ''.join(str(_KANJI_DIGIT_MAP[c]) for c in s)
+        try:
+            return str(_parse_section(s))
+        except Exception:
+            return s
+
+    return _KANJI_NUM_PATTERN.sub(_replace, text)
+
+
 def _remove_controls(s: str) -> str:
     return CONTROL_PATTERN.sub("", s)
 
@@ -129,6 +181,9 @@ def normalize(text: str) -> str:
 
     # 7) 最後に NFKC
     text = unicodedata.normalize("NFKC", text)
+
+    # 8.5) 漢数字 → 算用数字
+    text = _kanji_to_arabic(text)
 
     # 9) normalize.jsonによる置換
     for k, v in _NORMALIZE_DICT.items():
