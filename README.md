@@ -15,7 +15,7 @@ It combines SudachiPy morphological analysis with custom normalization rules (ol
 - **Japanese text normalization**: Old/new kanji conversion, kanji numeral → Arabic, bracket/punctuation/control character unification, NFKC, corporate abbreviation expansion (`(株)` → `株式会社`, etc.)
 - **Corporate name parsing**: Legal form extraction and brand name/kana via SudachiPy
 - **Personal name parsing**: Family/given name split using SudachiPy POS, whitespace, or surname dictionary
-- **Address parsing**: Prefecture → city → town → block using Address Base Registry data; block numbers are normalized to canonical form (halfwidth digits and hyphens)
+- **Address parsing**: State (prefecture) → city → suburb (town) → house_number (block) using Address Base Registry data; block numbers are normalized to canonical form (halfwidth digits and hyphens). Field names follow [libpostal](https://github.com/openvenues/libpostal) label conventions
 - **User dictionary support**: Extendable for industry-specific terms
 - **Testing**: 66 pytest-based unit and integration tests
 
@@ -66,7 +66,7 @@ print(result)
 
 #### 3. Parse address
 
-The parser splits an address into `prefecture`, `city`, `town`, and `block` using the Japanese government's [Address Base Registry](https://dataset.address-br.digital.go.jp/). Block numbers are normalized to a canonical halfwidth-digit-and-hyphen form regardless of the input style (fullwidth digits, `丁目/番/号`, `番地の`, etc.). The original block string is preserved in `block_raw` for auditing.
+The parser splits an address into `state`, `city`, `suburb`, and `house_number` using the Japanese government's [Address Base Registry](https://dataset.address-br.digital.go.jp/). Field names follow [libpostal](https://github.com/openvenues/libpostal) label conventions for cross-language address matching. Block numbers are normalized to a canonical halfwidth-digit-and-hyphen form regardless of the input style (fullwidth digits, `丁目/番/号`, `番地の`, etc.). The original block string is preserved in `house_number_raw` for auditing.
 
 ```python
 from ja_entityparser import parse_address
@@ -77,11 +77,11 @@ print(result)
 # {
 #   'input': '北海道札幌市中央区大通西３丁目１番５号',
 #   'normalized': '北海道札幌市中央区大通西3丁目1番5号',
-#   'prefecture': '北海道',
+#   'state': '北海道',
 #   'city': '札幌市中央区',
-#   'town': '大通西',
-#   'block': '3-1-5',
-#   'block_raw': '3丁目1番5号'
+#   'suburb': '大通西',
+#   'house_number': '3-1-5',
+#   'house_number_raw': '3丁目1番5号'
 # }
 
 # Example 2: 番地の format
@@ -90,11 +90,11 @@ print(result)
 # {
 #   'input': '愛知県江南市大字小折６２８番地の１',
 #   'normalized': '愛知県江南市大字小折628番地の1',
-#   'prefecture': '愛知県',
+#   'state': '愛知県',
 #   'city': '江南市',
-#   'town': '大字小折',
-#   'block': '628-1',
-#   'block_raw': '628番地の1'
+#   'suburb': '大字小折',
+#   'house_number': '628-1',
+#   'house_number_raw': '628番地の1'
 # }
 ```
 
@@ -117,7 +117,7 @@ print(normalize(text))
 |---|---|---|
 | `parse_corporate(text)` | Parse Japanese corporate name | `input`, `normalized`, `legal_form`?, `brand_name`, `brand_kana` |
 | `parse_person(text)` | Parse Japanese person name | `input`, `normalized`, `family_name`?, `given_name`?, `*_kana`? |
-| `parse_address(text)` | Parse Japanese address | `input`, `normalized`, `prefecture`?, `city`?, `town`?, `block`?, `block_raw`? |
+| `parse_address(text)` | Parse Japanese address | `input`, `normalized`, `state`?, `city`?, `suburb`?, `house_number`?, `house_number_raw`? |
 | `normalize(text)` | Normalize Japanese text | `str` |
 
 ### License

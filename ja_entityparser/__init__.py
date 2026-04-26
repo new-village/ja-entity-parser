@@ -1,5 +1,5 @@
 import logging
-from .normalizer import normalize
+from .normalizer import normalize, normalize_address
 from .tokenizer import sudachi_tokenize
 from .parsers.corporate import extract_business
 from .parsers.person import parse_person_tokens
@@ -37,13 +37,17 @@ def parse_person(text: str) -> dict:
 
 
 def parse_address(text: str) -> dict:
-    """Parse a Japanese address into prefecture, city, town, and block.
+    """Parse a Japanese address into state, city, suburb, and house_number.
 
     Returns a dict with keys: input, normalized, and any of:
-    prefecture, city, town, block.
+    state, city, suburb, house_number, house_number_raw.
+
+    Field names follow libpostal label conventions for cross-language compatibility.
+    Uses normalize_address() instead of normalize() to preserve kanji numerals
+    in place names (e.g. 千葉県, 三重県, 千代田区).
     """
     result = {'input': text}
-    normalized = normalize(text)
+    normalized = normalize_address(text)
     result['normalized'] = normalized
     result.update(parse_address_text(normalized))
     return result

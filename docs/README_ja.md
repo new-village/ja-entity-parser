@@ -13,7 +13,7 @@ SudachiPy による形態素解析と独自の正規化ルール（旧字→新�
 - **日本語テキスト正規化**: 旧字→新字変換、漢数字→算用数字変換、括弧・句読点・制御文字の統一、NFKC正規化、法人略称の展開（`(株)` → `株式会社` など）
 - **企業名解析**: SudachiPy による法人種別抽出とブランド名・カナの取得
 - **個人名解析**: SudachiPy の品詞情報・スペース・苗字辞書を使った姓名分割
-- **住所解析**: アドレス・ベース・レジストリデータによる都道府県→市区町村→町名→番地の分割。番地は半角数字＋ハイフンの正規形に統一
+- **住所解析**: アドレス・ベース・レジストリデータによる state（都道府県）→ city（市区町村）→ suburb（町名）→ house_number（番地）の分割。フィールド名は [libpostal](https://github.com/openvenues/libpostal) のラベル規約に準拠。番地は半角数字＋ハイフンの正規形に統一
 - **ユーザー辞書対応**: Sudachi ユーザー辞書で業界固有語にも対応可能
 - **テスト**: pytest によるユニット・統合テスト 66 件完備
 
@@ -64,9 +64,9 @@ print(result)
 
 #### 3. 住所解析
 
-住所を `prefecture`（都道府県）・`city`（市区町村）・`town`（町名）・`block`（番地）に分割します。データソースは日本政府の[アドレス・ベース・レジストリ](https://dataset.address-br.digital.go.jp/)です。
+住所を `state`（都道府県）・`city`（市区町村）・`suburb`（町名）・`house_number`（番地）に分割します。フィールド名は [libpostal](https://github.com/openvenues/libpostal) のラベル規約に準拠しています。データソースは日本政府の[アドレス・ベース・レジストリ](https://dataset.address-br.digital.go.jp/)です。
 
-番地は全角数字・`丁目/番/号`・`番地の` などの表記ゆれに対応し、半角数字＋ハイフンの正規形に変換します。正規化前の原文は `block_raw` に保持されます。
+番地は全角数字・`丁目/番/号`・`番地の` などの表記ゆれに対応し、半角数字＋ハイフンの正規形に変換します。正規化前の原文は `house_number_raw` に保持されます。
 
 ```python
 from ja_entityparser import parse_address
@@ -77,11 +77,11 @@ print(result)
 # {
 #   'input': '北海道札幌市中央区大通西３丁目１番５号',
 #   'normalized': '北海道札幌市中央区大通西3丁目1番5号',
-#   'prefecture': '北海道',
+#   'state': '北海道',
 #   'city': '札幌市中央区',
-#   'town': '大通西',
-#   'block': '3-1-5',
-#   'block_raw': '3丁目1番5号'
+#   'suburb': '大通西',
+#   'house_number': '3-1-5',
+#   'house_number_raw': '3丁目1番5号'
 # }
 
 # 例2: 番地の 形式
@@ -90,11 +90,11 @@ print(result)
 # {
 #   'input': '愛知県江南市大字小折６２８番地の１',
 #   'normalized': '愛知県江南市大字小折628番地の1',
-#   'prefecture': '愛知県',
+#   'state': '愛知県',
 #   'city': '江南市',
-#   'town': '大字小折',
-#   'block': '628-1',
-#   'block_raw': '628番地の1'
+#   'suburb': '大字小折',
+#   'house_number': '628-1',
+#   'house_number_raw': '628番地の1'
 # }
 ```
 
@@ -114,7 +114,7 @@ print(normalize(text))
 |---|---|---|
 | `parse_corporate(text)` | 企業名を解析 | `input`, `normalized`, `legal_form`?, `brand_name`, `brand_kana` |
 | `parse_person(text)` | 個人名を解析 | `input`, `normalized`, `family_name`?, `given_name`?, `*_kana`? |
-| `parse_address(text)` | 住所を解析 | `input`, `normalized`, `prefecture`?, `city`?, `town`?, `block`?, `block_raw`? |
+| `parse_address(text)` | 住所を解析 | `input`, `normalized`, `state`?, `city`?, `suburb`?, `house_number`?, `house_number_raw`? |
 | `normalize(text)` | 日本語テキストを正規化 | `str` |
 
 ### ライセンス

@@ -69,33 +69,34 @@ class TestParseAddress:
     def test_tokyo_taito(self):
         r = parse_address("東京都台東区寿3-1-5")
         assert r["input"] == "東京都台東区寿3-1-5"
-        assert r["prefecture"] == "東京都"
+        assert r["state"] == "東京都"
         assert r["city"] == "台東区"
-        assert r["town"] == "寿"
-        assert r["block"] == "3-1-5"
+        assert r["suburb"] == "寿"
+        assert r["house_number"] == "3-1-5"
 
     def test_osaka(self):
         r = parse_address("大阪府大阪市北区梅田1-2-3")
-        assert r["prefecture"] == "大阪府"
-        assert r["city"] == "大阪市"
-        assert r.get("block") == "1-2-3"
+        assert r["state"] == "大阪府"
+        assert r["city"] == "大阪市北区"
+        assert r.get("house_number") == "1-2-3"
 
     def test_hokkaido_chome(self):
         r = parse_address("北海道札幌市中央区大通西1丁目1番1号")
-        assert r["prefecture"] == "北海道"
-        assert r["city"] == "札幌市"
-        assert "1丁目1番1号" in r.get("block", "")
+        assert r["state"] == "北海道"
+        assert r["city"] == "札幌市中央区"
+        assert r.get("house_number") == "1-1-1"          # normalized form
+        assert r.get("house_number_raw") == "1丁目1番1号"  # raw form preserved
 
     def test_normalized_field(self):
         r = parse_address("東京都渋谷区神南1-1-1")
         assert "normalized" in r
-        assert r["prefecture"] == "東京都"
+        assert r["state"] == "東京都"
 
     def test_full_roundtrip_aichi(self):
         r = parse_address("愛知県名古屋市千種区今池1-1-10")
-        assert r["prefecture"] == "愛知県"
-        assert r["city"] == "名古屋市"
-        assert "block" in r
+        assert r["state"] == "愛知県"
+        assert r["city"] == "名古屋市千種区"
+        assert "house_number" in r
 
 
 

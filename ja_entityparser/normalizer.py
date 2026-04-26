@@ -148,6 +148,25 @@ def _load_normalize_dict():
 
 _NORMALIZE_DICT = _load_normalize_dict()
 
+def normalize_address(text: str) -> str:
+    """住所専用の正規化。漢数字変換を行わず NFKC のみ適用する。
+
+    住所文字列に対して汎用 normalize() を使うと「千葉県 → 1000葉県」のように
+    地名に含まれる漢数字が破壊されるため、住所パスでは本関数を使う。
+    適用内容:
+      - 制御/不可視文字の除去
+      - 全角→半角（NFKC）
+      - 濁点/半濁点の正規化
+      - 旧字→新字（joyokanji）
+    漢数字変換・句読点→スペース変換・括弧変換は行わない。
+    """
+    text = _remove_controls(text)
+    text = _apply_voicing_map(text)
+    text = joyokanji.convert(text, variants=True)
+    text = unicodedata.normalize("NFKC", text)
+    return text
+
+
 def normalize(text: str) -> str:
     """
     日本語標準化（NFKCを最後）：

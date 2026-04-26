@@ -5,6 +5,8 @@ import json
 import os
 import logging
 
+from ja_entityparser.parsers.address_normalize import normalize_block
+
 logger = logging.getLogger(__name__)
 
 _DICT_PATH = os.path.join(os.path.dirname(__file__), "..", "dict", "address_parts.json")
@@ -31,17 +33,31 @@ _ALL_MUNICIPALITIES: list = [
     for muni in munis
 ]
 
-# Block number patterns: 3-1-5 / 3丁目1番5号 / ３－１－５
+# Block number pattern — captures numeric+structural portion.
+# Ordered from most-specific to least-specific.
+# Fullwidth digits (０-９) are also matched.
+# Block number pattern (half/full-width digits, structural kanji, hyphens)
+# Alternatives ordered most-specific first.
 _BLOCK_PATTERN = re.compile(
-    r'(\d+丁目\d+番\d*号?|\d+[-－]\d+(?:[-－]\d+)*|\d+番地\d*)'
+    r"([0-9０-９]+丁目[0-9０-９]+番[0-9０-９]*号?"
+    r"|[0-9０-９]+番地の[0-9０-９]+"
+    r"|[0-9０-９]+番地"
+    r"|[0-9０-９]+番[0-9０-９]*号?"
+    r"|[0-9０-９]+[-－‐ー][0-9０-９]+(?:[-－‐ー][0-9０-９]+)*"
+    r"|[0-9０-９]+の[0-9０-９]+"
+    r")"
 )
 
 
 def parse_address_text(text: str) -> dict:
     """Parse a Japanese address string into components.
 
-    Returns a dict with any of: prefecture, city, town, block.
+    Returns a dict with any of: state, city, suburb, house_number, house_number_raw.
+    - ``house_number`` is the normalized canonical form (halfwidth digits + hyphens).
+    - ``house_number_raw`` preserves the original extracted string for auditing.
     Missing components are omitted from the dict.
+
+    Field names follow libpostal label conventions for cross-language compatibility.
     """
     result = {}
     remaining = text
@@ -49,12 +65,12 @@ def parse_address_text(text: str) -> dict:
     # 1. Match prefecture
     for pref in _PREFECTURES_SORTED:
         if remaining.startswith(pref):
-            result["prefecture"] = pref
+            result["state"] = pref
             remaining = remaining[len(pref):]
             break
 
     # 2. Match municipality (city/ward) — only within known prefecture
-    pref_key = result.get("prefecture", "")
+    pref_key = result.get("state", "")
     candidates = _MUNICIPALITIES.get(pref_key, [])
     # If prefecture not found or no candidates, try all municipalities
     if not candidates:
@@ -73,11 +89,13 @@ def parse_address_text(text: str) -> dict:
         block_start = block_match.start()
         town_text = remaining[:block_start].strip()
         if town_text:
-            result["town"] = town_text
-        result["block"] = block_match.group(0)
+            result["suburb"] = town_text
+        raw_block = block_match.group(0)
+        result["house_number"] = normalize_block(raw_block)
+        result["house_number_raw"] = raw_block
     else:
-        # No block found — remaining is all town
+        # No block found — remaining is all suburb
         if remaining.strip():
-            result["town"] = remaining.strip()
+            result["suburb"] = remaining.strip()
 
     return result
