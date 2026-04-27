@@ -201,8 +201,6 @@ def normalize(text: str) -> str:
     # 7) 最後に NFKC
     text = unicodedata.normalize("NFKC", text)
 
-    # 8.5) 漢数字 → 算用数字
-    text = _kanji_to_arabic(text)
 
     # 9) normalize.jsonによる置換
     for k, v in _NORMALIZE_DICT.items():

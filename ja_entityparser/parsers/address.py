@@ -48,6 +48,11 @@ _BLOCK_PATTERN = re.compile(
     r")"
 )
 
+# Fallback: bare trailing number after town name (e.g. 末広町１８４)
+_TRAILING_NUMBER_PATTERN = re.compile(
+    r"(?<=[^\d０-９])([0-9０-９]+)$"
+)
+
 
 def parse_address_text(text: str) -> dict:
     """Parse a Japanese address string into components.
@@ -94,8 +99,18 @@ def parse_address_text(text: str) -> dict:
         result["house_number"] = normalize_block(raw_block)
         result["house_number_raw"] = raw_block
     else:
-        # No block found — remaining is all suburb
-        if remaining.strip():
-            result["suburb"] = remaining.strip()
+        # Fallback: trailing bare number (e.g. 末広町１８４)
+        stripped = remaining.strip()
+        if stripped:
+            trail_match = _TRAILING_NUMBER_PATTERN.search(stripped)
+            if trail_match:
+                town_text = stripped[:trail_match.start()].strip()
+                if town_text:
+                    result["suburb"] = town_text
+                raw_num = trail_match.group(1)
+                result["house_number"] = normalize_block(raw_num)
+                result["house_number_raw"] = raw_num
+            else:
+                result["suburb"] = stripped
 
     return result
