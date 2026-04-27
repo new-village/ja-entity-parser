@@ -1,7 +1,7 @@
 import pytest
 import unicodedata
 import joyokanji
-from ja_entityparser.normalizer import normalize
+from ja_entityparser.normalizer import normalize, _kanji_to_arabic
 
 # 制御・不可視文字の除去
 @pytest.mark.parametrize("input_text,expected", [
@@ -102,7 +102,7 @@ def test_samples(input_text, expected):
 def test_corporate_abbreviation_normalize(input_text, expected):
     assert normalize(input_text) == expected
 
-# Phase 1: 漢数字 → 算用数字
+# Phase 1: 漢数字 → 算用数字 (_kanji_to_arabic は内部関数として保持; normalize() からは除外済み)
 @pytest.mark.parametrize("input_text,expected", [
     ("三百二十一", "321"),
     ("千九百九十九", "1999"),
@@ -111,4 +111,4 @@ def test_corporate_abbreviation_normalize(input_text, expected):
     ("一二三", "123"),
 ])
 def test_kanji_to_arabic(input_text, expected):
-    assert normalize(input_text) == expected
+    assert _kanji_to_arabic(input_text) == expected
